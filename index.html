@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="PatchVSR: Breaking Video Diffusion Resolution Limits with Patch-wise Video Super-Resolution">
+  <meta name="keywords" content="Patch-wise Video Super-Resolution">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="assets/images/logo.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:title" content="PatchVSR">
+  <meta name="twitter:description" content="description">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="assets/images/logo.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <title>PatchVSR</title>
+  <!-- Latex -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        TeX: { equationNumbers: { autoNumber: "AMS" } },
+      });
+      </script>
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+  </script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<!--   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+
+  </script> -->
+  <style>
+  .hr {width: 100%; height: 1px; margin: 48px 0; background-color: #d6dbdf;}
+  </style>
+
+  <link rel="icon" type="image/x-icon" href="assets/images/logo.png">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/bulma.min.css">
+  <link rel="stylesheet" href="./assets/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./assets/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./assets/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./assets/css/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <!-- custom css file  -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/twentytwenty.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop head">
+      <div class="columns is-centered">
+        <div class="column has-text-centered head">
+          <img src="assets/images/logo.png" style="height:150px; margin-bottom: 20px; margin-top: -0px;"></img>
+          <h1 class="title is-3 publication-title"> 
+            PatchVSR: Breaking Video Diffusion Resolution Limits with Patch-wise Video Super-Resolution
+          </h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://scholar.google.cz/citations?user=SUgR5VAAAAAJ&hl=zh-CN">Shian Du</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://menghanxia.github.io/">Menghan Xia</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.au.tsinghua.edu.cn/en/info/1096/3484.htm">Chang Liu</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://xinntao.github.io/">Xintao Wang</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.cz/citations?hl=zh-CN&user=1hM9InoAAAAJ">Jing Wang</a><sup>3</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=P6MraaYAAAAJ&hl=en">Pengfei Wan</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.cz/citations?hl=zh-CN&user=YPaQkAoAAAAJ">Di Zhang</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.au.tsinghua.edu.cn/info/1080/3178.htm">Xiangyang Ji</a><sup>1</sup>,</span>
+
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Tsinghua University,</span>&nbsp;
+            <span class="author-block"><sup>2</sup>Kling Team, Kuaishou Technology,</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>3</sup>Beijing Institute of Technology</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">CVPR 2025</span>
+          </div>
+          
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href="./xx.pdf" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+
+              <!-- Video Link. -->
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-small" style="margin-top: -50px;">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-">
+          <h2 class="subtitle has-text-justified">
+            <b>TL;DR:</b> We propose PatchVSR, the first exploration of utilizing a pre-trained T2V base model for patch-level video super-resolution. To accomplish this, we propose an effective dual-branch adapter consisting of a patch condition branch and a global context branch. Additionally, our proposed multi-patch joint modulation scheme achieves consistent results across patches.
+          </h2>
+          <p><br></p>
+</section>
+
+
+<div style="margin-bottom: 3rem;"></div>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+      <!-- <div class="column"> -->
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Pre-trained video generation models hold great potential for generative video super-resolution (VSR). 
+            However, adapting them for full-size VSR, as most existing methods do, suffers from unnecessary intensive 
+            full-attention computation and fixed output resolution. To overcome these limitations, we make the first 
+            exploration into utilizing video diffusion priors for patch-wise VSR. This is non-trivial because 
+            pre-trained video diffusion models are not native for patch-level detail generation. To mitigate this 
+            challenge, we propose an innovative approach, called PatchVSR, which integrates a dual-stream adapter for 
+            conditional guidance. The patch branch extracts features from input patches to maintain content fidelity 
+            while the global branch extracts context features from the resized full video to bridge the generation 
+            gap caused by incomplete semantics of patches. Particularly, we also inject the patch's location 
+            information into the model to better contextualize patch synthesis within the global video frame. 
+            Experiments demonstrate that our method can synthesize high-fidelity, high-resolution details at the 
+            patch level. A tailor-made multi-patch joint modulation is proposed to ensure visual consistency across 
+            individually enhanced patches. Due to the flexibility of our patch-based paradigm, we can achieve highly 
+            competitive 4K VSR based on a 512x512 resolution base model, with extremely high efficiency.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <!-- <div class="column is-four-fifths"> -->
+      <div class="column">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            Flowchart of our PatchVSR. Building upon a pre-trained latent T2V model, we incorporate a patch condition 
+            branch and a global context branch. These branches extract features from partitioned video patches and 
+            the resized full video together with a binary mask that indicates the location of the ROI patch, 
+            respectively. Particularly, local patch features are added to the output of each block, while the global 
+            context feature is fused with the backbone feature through newly introduced cross-attention modules 
+            (G-CA). For simplicity, we have omitted other conditional inputs such as text prompts and time steps from 
+            this diagram. The processed patches are fused via a joint modulation scheme to produce a coherent 
+            super-resolution video.
+          </p>
+          <div class="column">
+            <img src="./assets/images/overview.png" />
+          </div>
+        </div>
+
+      <div class="column">
+        <h2 class="title is-3">Multi-patch Joint Modulation</h2>
+        <div class="content has-text-justified">
+          <p>
+            Patch Partition Visualization. The input video is divided into non-overlapping segments, as the solid 
+            blue boxes mark. For joint modulation, auxiliary patches are created, indicated by the red dashed boxes, 
+            resulting in an overlapping ratio of 0.5.
+          </p>
+          <div class="column">
+            <img src="./assets/images/patch_partition.png" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <div class="columns is-centered"><p>
+            This page was built using the <a
+                href="https://github.com/JianhongBai/ReCamMaster" target="_blank">ReCamMaster</a> and <a href="https://github.com/xh9998/DiffVSR-project">DiffVSR</a>.
+              <br> This website is licensed under a <a rel="license"
+                href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+                Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <!-- custom js file  -->
+  <!-- <script defer src="./assets/js/fontawesome.all.min.js"></script> -->
+  <script src="./assets/js/bulma-carousel.min.js"></script>
+  <script src="./assets/js/bulma-slider.min.js"></script>
+  <script src="./assets/js/index.js"></script>
+  <script src="./assets/js/jquery.event.move.js"></script>
+  <script src="./assets/js/jquery.twentytwenty.js"></script>
+  <script>
+    bulmaCarousel.attach('#results-carousel', {
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      infinite: true,
+      autoplay: true,
+      navigation: true
+    });
+
+  // 初始化twentytwenty比较功能
+  $(function(){
+    $(".twentytwenty-container").twentytwenty();
+    // $(".twentytwenty-container", "#results-carousel").twentytwenty({default_offset_pct: 0.5, ratio: 0.5});
+  });
+  </script>
+
+
+  <!-- 引入 Bulma CSS （需要时再加，如果已有可忽略） -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <!-- <style>
+    /* 如果想固定强制 2×2，可自行覆盖 Bulma 样式，如下： */
+    .columns.is-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 两列 */
+      grid-template-rows: auto auto;  /* 两行 */
+      gap: 1rem;
+    }
+    .slide-content {
+      display: none; /* 默认隐藏 */
+    }
+    .slide-content.is-active {
+      display: block; /* 显示被选中的 slide */
+    }
+    /* 去除底部小圆点上的默认背景 */
+    .dots .dot {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .card-img {
+      border: 2px solid #c1bfbf;
+      border-radius: 8px;
+      padding: 2px;
+      display: inline-block;
+      transition: transform 0.3s ease-in-out;
+      transform-origin: center center;
+    }
+    .card-img:active {
+      transform: scale(1.2);
+    }
+  </style> -->
+<!-- 
+  <style>
+    /* 上下两个视频布局：1列2行 */
+    .columns.is-2x1 {
+      display: grid;
+      grid-template-columns: 1fr;     /* 1 列 */
+      grid-template-rows: auto auto; /* 2 行 */
+      gap: 1rem;
+    }
+    /* 默认隐藏每个slide */
+    .slide-content {
+      display: none;
+    }
+    /* 只显示被点选的slide */
+    .slide-content.is-active {
+      display: block;
+    }
+    /* 去掉小圆点默认背景 */
+    .dots .dot {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    /* 缩略图样式 (可按需保留/修改) */
+    .card-img {
+      border: 2px solid #c1bfbf;
+      border-radius: 8px;
+      padding: 2px;
+      display: inline-block;
+      transition: transform 0.3s ease-in-out;
+      transform-origin: center center;
+    }
+    .card-img:active {
+      transform: scale(1.2);
+    }
+    /* 让四张图片等分排列在一行 */
+    .columns.is-four-images {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 一行四列 */
+      gap: 1rem;
+      margin-top: 1.5rem; /* 与上方视频留点间隔 */
+    }
+    /* 如果要让图片自适应宽度，可以加: */
+    .columns.is-four-images img {
+      width: 100%;
+      height: auto;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+  </style> -->
+
+  <style>
+    /* 上下两个内容布局：1列2行 */
+    .columns.is-2x1 {
+      display: grid;
+      grid-template-columns: 1fr;     /* 1 列 */
+      grid-template-rows: auto auto; /* 2 行 */
+      gap: 1rem;
+    }
+
+    /* 默认隐藏每个 slide */
+    .slide-content {
+      display: none;
+    }
+
+    /* 只显示被点选的 slide */
+    .slide-content.is-active {
+      display: block;
+    }
+
+    /* 去掉小圆点默认背景 */
+    .dots .dot {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* 缩略图样式 (可按需保留/修改) */
+    .card-img {
+      border: 2px solid #c1bfbf;
+      border-radius: 8px;
+      padding: 2px;
+      display: inline-block;
+      transition: transform 0.3s ease-in-out;
+      transform-origin: center center;
+    }
+    .card-img:active {
+      transform: scale(1.2);
+    }
+
+    /* 让四张图片等分排列在一行 */
+    .columns.is-four-images {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 一行四列 */
+      gap: 1rem;
+      margin-top: 1.5rem; /* 与上方留些间隔 */
+    }
+    .columns.is-four-images img {
+      width: 100%;
+      height: auto;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+
+</body>
+</html>
